@@ -24,6 +24,7 @@ public class UserController {
     public User createUser(@RequestBody User user) {
         if (user.getLogin().contains(" ") ||
                 user.getBirthday().isAfter(LocalDate.now())
+                || users.get(user.getId()) == null
         ) {
             log.error("Invalid user params", ValidationException.class);
             throw new ValidationException();
@@ -33,14 +34,10 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        if (users.get(user.getId()) == null) {
-            user.setId(++id);
-            users.put(user.getId(), user);
-            log.info("User's been added {}", users.keySet());
-        } else {
-            throw new ValidationException();
-        }
 
+        user.setId(++id);
+        users.put(user.getId(), user);
+        log.info("User's been added {}", users.keySet());
         return user;
     }
 
