@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,10 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
 
-        if (film.getName().isEmpty() || film.getName() == null || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
-                || films.get(film.getId()) != null || film.getDuration() < 0 || films.get(film.getId()) != null) {
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
+                || films.get(film.getId()) != null || films.get(film.getId()) != null) {
             throw new ValidationException();
         }
 
@@ -37,11 +37,10 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
 
-        if (film.getName() == null || film.getDescription().isEmpty() || film.getDescription().length() > 200 ||
-                film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
-        || films.get(film.getId()) == null
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
+                || films.get(film.getId()) == null
         ) {
             throw new ValidationException();
         }

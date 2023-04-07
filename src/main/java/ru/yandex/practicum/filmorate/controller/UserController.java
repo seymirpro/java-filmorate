@@ -22,8 +22,7 @@ public class UserController {
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") ||
-                user.getLogin().contains(" ") || user.getLogin().isEmpty() ||
+        if (user.getLogin().contains(" ") ||
                 user.getBirthday().isAfter(LocalDate.now())
         ) {
             log.error("Invalid user params", ValidationException.class);
@@ -34,7 +33,7 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        if (users.get(user.getId()) == null){
+        if (users.get(user.getId()) == null) {
             user.setId(++id);
             users.put(user.getId(), user);
             log.info("User's been added {}", users.keySet());
@@ -47,8 +46,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") ||
-                user.getLogin().contains(" ") || user.getLogin().isEmpty() ||
+        if (user.getLogin().contains(" ") ||
                 user.getBirthday().isAfter(LocalDate.now())
         ) {
             log.error("Invalid user params", ValidationException.class);
