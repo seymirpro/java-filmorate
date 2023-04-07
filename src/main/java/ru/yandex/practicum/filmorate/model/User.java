@@ -4,9 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class User {
