@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -17,11 +18,12 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getUsers() {
-        return users.values();
+        Collection<User> res = users.values();
+        return res;
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         if (user.getLogin().contains(" ") ||
                 user.getBirthday().isAfter(LocalDate.now())
                 || users.get(user.getId()) != null
@@ -42,20 +44,13 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
-        if (user.getLogin().contains(" ") ||
-                user.getBirthday().isAfter(LocalDate.now())
-        ) {
-            log.error("Invalid user params", ValidationException.class);
-            throw new ValidationException();
-        }
+    public User updateUser(@Valid @RequestBody User user) {
 
         if (user.getName().isEmpty() || user.getName() == null) {
             user.setName(user.getLogin());
         }
 
         if (users.get(user.getId()) != null) {
-
             users.put(user.getId(), user);
         } else {
             log.error("User details => {}", user);

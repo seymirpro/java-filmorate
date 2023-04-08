@@ -4,17 +4,15 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+import ru.yandex.practicum.filmorate.utils.validation.constraints.MinReleaseDate;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
 @Builder
 public class Film {
-    //private static final AtomicInteger currentId = new AtomicInteger();
-    private int id;// = currentId.incrementAndGet();
+    private int id;
     @NonNull
     @NotBlank
     private String name;
@@ -23,6 +21,9 @@ public class Film {
     @NotBlank
     private String description;
 
+
+    @PastOrPresent
+    @MinReleaseDate
     private LocalDate releaseDate;
 
     @PositiveOrZero

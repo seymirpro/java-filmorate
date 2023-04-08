@@ -21,14 +21,14 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return films.values();
+        Collection<Film> res = films.values();
+        return res;
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
 
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
-                || films.get(film.getId()) != null || films.get(film.getId()) != null) {
+        if (films.get(film.getId()) != null || films.get(film.getId()) != null) {
             log.error("Film params invalid", ValidationException.class);
             throw new ValidationException();
         }
@@ -42,9 +42,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
 
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
-                || films.get(film.getId()) == null
-        ) {
+        if (films.get(film.getId()) == null) {
             log.error("Film update operation invalid", ValidationException.class);
             throw new ValidationException();
         }
