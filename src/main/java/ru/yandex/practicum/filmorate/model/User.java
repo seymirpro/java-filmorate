@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
