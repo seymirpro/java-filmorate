@@ -21,7 +21,7 @@ class UserTest {
     }
 
     @Test
-    public void shouldHaveValidEmail(){
+    public void shouldHaveValidEmail() {
         @Valid User user = new User(1, "aa","yandex", "Sevinc", LocalDate.of(1995, 2, 2));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
@@ -32,7 +32,7 @@ class UserTest {
     }
 
     @Test
-    public void shouldNotContainWhitespaceInLogin(){
+    public void shouldNotContainWhitespaceInLogin() {
         @Valid User userValid = new User(1, "a@yandex.ru","yandex     ", "Sevinc",
                 LocalDate.of(1995, 2, 2));
         Set<ConstraintViolation<User>> violationsAll = validator.validate(userValid);
@@ -41,7 +41,7 @@ class UserTest {
 
 
     @Test
-    public void shouldHaveValidBirthday(){
+    public void shouldHaveValidBirthday() {
         @Valid User userValid = new User(1, "a@yandex.ru","yandex     ", "Sevinc",
                 LocalDate.of(2078, 2, 2));
         Set<ConstraintViolation<User>> violationsAll = validator.validate(userValid);
@@ -49,7 +49,7 @@ class UserTest {
     }
 
     @Test
-    public void shouldUseLoginIfNameIsEmpty(){
+    public void shouldUseLoginIfNameIsEmpty() {
 
     }
 }
