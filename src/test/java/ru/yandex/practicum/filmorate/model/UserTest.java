@@ -27,16 +27,16 @@ class UserTest {
         assertFalse(violations.isEmpty());
 
         @Valid User userValid = new User(1, "a@yandex.ru","yandex", "Sevinc", LocalDate.of(1995, 2, 2));
-        Set<ConstraintViolation<User>> violations_ = validator.validate(userValid);
-        assertTrue(violations_.isEmpty());
+        Set<ConstraintViolation<User>> violationsAll = validator.validate(userValid);
+        assertTrue(violationsAll.isEmpty());
     }
 
     @Test
     public void shouldNotContainWhitespaceInLogin(){
         @Valid User userValid = new User(1, "a@yandex.ru","yandex     ", "Sevinc",
                 LocalDate.of(1995, 2, 2));
-        Set<ConstraintViolation<User>> violations_ = validator.validate(userValid);
-        assertTrue(violations_.isEmpty());
+        Set<ConstraintViolation<User>> violationsAll = validator.validate(userValid);
+        assertTrue(violationsAll.isEmpty());
     }
 
 
@@ -44,8 +44,8 @@ class UserTest {
     public void shouldHaveValidBirthday(){
         @Valid User userValid = new User(1, "a@yandex.ru","yandex     ", "Sevinc",
                 LocalDate.of(2078, 2, 2));
-        Set<ConstraintViolation<User>> violations_ = validator.validate(userValid);
-        assertFalse(violations_.isEmpty());
+        Set<ConstraintViolation<User>> violationsAll = validator.validate(userValid);
+        assertFalse(violationsAll.isEmpty());
     }
 
     @Test
