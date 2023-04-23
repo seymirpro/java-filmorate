@@ -12,4 +12,6 @@ public interface UserStorage {
     boolean existsInStorage(Integer id);
 
     User updateUser(User user);
+
+    User getUserByID(Integer id);
 }

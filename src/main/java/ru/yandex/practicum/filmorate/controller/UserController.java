@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -21,7 +22,25 @@ public class UserController {
         this.userService = userService;
     }
 
-    private static int id = 0;
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Integer id){
+        return userService.getUserByID(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId){
+        userService.addFriend(userService.getUserByID(id), userService.getUserByID(friendId));
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId){
+        userService.removeFriend(userService.getUserByID(id), userService.getUserByID(friendId));
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable Integer id){
+        return userService.getUserFriends(id);
+    }
 
     @GetMapping
     public Collection<User> getUsers() {
@@ -37,6 +56,11 @@ public class UserController {
             log.error("Invalid user params", ValidationException.class);
         }
         return user;
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId){
+        return userService.getMutualFriends(userService.getUserByID(id), userService.getUserByID(otherId));
     }
 
     @PutMapping

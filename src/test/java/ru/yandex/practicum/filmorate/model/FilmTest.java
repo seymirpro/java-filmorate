@@ -21,7 +21,7 @@ class FilmTest {
 
     @Test
     public void shouldContainNonEmptyName() {
-        @Valid Film film = new Film(1, "", "description", LocalDate.now(), 20);
+        @Valid Film film = new Film(1, "", "description", LocalDate.now(), 20, Set.of());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
@@ -38,7 +38,7 @@ class FilmTest {
                 "descriptiondescription" +
                 "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescr" +
                 "iptiondescriptiondescriptiondescriptiondescriptiondescriptionde" +
-                "scriptiondescriptiondescription", LocalDate.now(), 20);
+                "scriptiondescriptiondescription", LocalDate.now(), 20, Set.of());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         violations.stream().forEach(System.out::println);
         assertFalse(violations.isEmpty());
@@ -46,14 +46,16 @@ class FilmTest {
 
     @Test
     public void shouldNotHaveReleaseDateBefore18951228() {
-        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1700, 1, 1), 20);
+        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1700, 1, 1),
+                20, Set.of());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void shouldHavePositiveDuration() {
-        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1900, 1, 1), -19);
+        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1900, 1, 1)
+                , -19, Set.of());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }

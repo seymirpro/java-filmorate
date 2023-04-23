@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.utils.validation.constraints.MinReleaseDate
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -28,4 +29,6 @@ public class Film {
 
     @PositiveOrZero
     private double duration;
+
+    private Set<Integer> userLikes;
 }

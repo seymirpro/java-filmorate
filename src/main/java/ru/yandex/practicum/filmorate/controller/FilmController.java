@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -20,6 +21,26 @@ public class FilmController {
     @Autowired
     public FilmController(FilmService filmService){
         this.filmService = filmService;
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmByID(@PathVariable Integer id){
+        return filmService.getFilmByID(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId){
+        filmService.addLike(filmService.getFilmByID(id), userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId){
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular?count={count}")
+    public List<Film> getMostPopularFilmsList(){
+        return null;
     }
 
     @GetMapping

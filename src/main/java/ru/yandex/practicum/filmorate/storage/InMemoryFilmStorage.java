@@ -35,7 +35,12 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public boolean existsInStorage(Film film) {
-        return films.get(film.getId()) != null;
+    public boolean existsInStorage(Integer id) {
+        return films.get(id) != null;
+    }
+
+    @Override
+    public Film getFilmByID(Integer id) {
+        return films.get(id);
     }
 }
