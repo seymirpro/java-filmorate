@@ -1,63 +1,62 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
 public class UserController {
-    private Map<Integer, User> users = new HashMap<>();
-    private static int id = 0;
+    private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Integer id) {
+        return userService.getUserByID(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable Integer id) {
+        return userService.getUserFriends(id);
+    }
 
     @GetMapping
     public Collection<User> getUsers() {
-        Collection<User> res = users.values();
-        return res;
+        return userService.getUsers();
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        if (user.getLogin().contains(" ") ||
-                user.getBirthday().isAfter(LocalDate.now())
-                || users.get(user.getId()) != null
-        ) {
-            log.error("Invalid user params", ValidationException.class);
-            throw new ValidationException();
-        }
+        return userService.createUser(user);
+    }
 
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-
-
-        user.setId(++id);
-        users.put(user.getId(), user);
-        log.info("User's been added {}", users.keySet());
-        return user;
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getMutualFriends(id, otherId);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-
-        if (user.getName().isEmpty() || user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-
-        if (users.get(user.getId()) != null) {
-            users.put(user.getId(), user);
-        } else {
-            log.error("User details => {}", user);
-            log.error("Current map state => {}", users.keySet());
-            throw new ValidationException();
-        }
-
+        userService.updateUser(user);
         return user;
     }
 }

@@ -46,7 +46,8 @@ class FilmTest {
 
     @Test
     public void shouldNotHaveReleaseDateBefore18951228() {
-        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1700, 1, 1), 20);
+        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1700, 1, 1),
+                20);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }

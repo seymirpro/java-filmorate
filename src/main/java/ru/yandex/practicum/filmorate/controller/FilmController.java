@@ -1,53 +1,59 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 public class FilmController {
-    private Map<Integer, Film> films = new HashMap<>();
-    private static int id;
+    private FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmByID(@PathVariable Integer id) {
+        return filmService.getFilmByID(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getMostPopularFilmsList(@RequestParam(value = "count", required = false) String count) {
+        return filmService.getMostPopularFilms(count);
+    }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        Collection<Film> res = films.values();
-        return res;
+        return filmService.getFilms();
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-
-        if (films.get(film.getId()) != null || films.get(film.getId()) != null) {
-            log.error("Film params invalid", ValidationException.class);
-            throw new ValidationException();
-        }
-
-        film.setId(++id);
-        films.put(film.getId(), film);
-        log.info("Film added");
+        filmService.addFilm(film);
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-
-        if (films.get(film.getId()) == null) {
-            log.error("Film update operation invalid", ValidationException.class);
-            throw new ValidationException();
-        }
-
-        log.info("Film updated");
-        films.put(film.getId(), film);
+        filmService.updateFilm(film);
         return film;
     }
 }
