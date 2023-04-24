@@ -54,8 +54,7 @@ class FilmTest {
 
     @Test
     public void shouldHavePositiveDuration() {
-        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1900, 1, 1)
-                , -19);
+        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1900, 1, 1), -19);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
