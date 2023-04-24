@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> users;
     private static Integer id = 0;
 
-    public InMemoryUserStorage(){
+    public InMemoryUserStorage() {
         users = new HashMap<>();
     }
 
@@ -41,7 +41,7 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User getUserByID(Integer id){
+    public User getUserByID(Integer id) {
         return users.get(id);
     }
 }

@@ -30,7 +30,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleGeneralExceptions(final Throwable t){
+    public ErrorResponse handleGeneralExceptions(final Throwable t) {
         return new ErrorResponse(
                 String.format("Ошибка с полем \"%s\".", t.getLocalizedMessage())
         );

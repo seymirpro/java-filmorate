@@ -20,27 +20,27 @@ public class FilmController {
     private FilmService filmService;
 
     @Autowired
-    public FilmController(FilmService filmService){
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @GetMapping("/{id}")
-    public Film getFilmByID(@PathVariable Integer id){
+    public Film getFilmByID(@PathVariable Integer id) {
         return filmService.getFilmByID(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Integer id, @PathVariable Integer userId){
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLike(filmService.getFilmByID(id), userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId){
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
-    public List<Film> getMostPopularFilmsList(@RequestParam(value = "count", required = false) String count){
+    public List<Film> getMostPopularFilmsList(@RequestParam(value = "count", required = false) String count) {
         log.info("Count query param is {}", count);
         List<Film> popularFilms = null;
         popularFilms = filmService.getMostPopularFilms(count);
@@ -58,7 +58,7 @@ public class FilmController {
         try {
             filmService.addFilm(film);
             log.info("Film added");
-        } catch (ValidationException ex){
+        } catch (ValidationException ex) {
             log.error(ex.getLocalizedMessage());
         }
 
@@ -70,7 +70,7 @@ public class FilmController {
         try {
             filmService.updateFilm(film);
             log.info("Film updated");
-        } catch (ValidationException ex){
+        } catch (ValidationException ex) {
             log.error("Film update operation invalid", ValidationException.class);
         }
         return film;

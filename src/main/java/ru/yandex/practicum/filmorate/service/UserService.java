@@ -43,8 +43,8 @@ public class UserService {
         return user;
     }
 
-    public User updateUser(User user){
-        if (!userStorage.existsInStorage(user.getId())){
+    public User updateUser(User user) {
+        if (!userStorage.existsInStorage(user.getId())) {
             throw new UserDoesNotExist();
         }
 
@@ -61,21 +61,21 @@ public class UserService {
         return user;
     }
 
-    public void addFriend(User user, User newFriend){
+    public void addFriend(User user, User newFriend) {
         Set<Integer> currentFriends = user.getFriends();
         currentFriends.add(newFriend.getId());
         Set<Integer> newFriendFriends = newFriend.getFriends();
         newFriendFriends.add(user.getId());
     }
 
-    public void removeFriend(User user, User friend){
+    public void removeFriend(User user, User friend) {
         Set<Integer> currentFriends = user.getFriends();
         currentFriends.remove(friend.getId());
         Set<Integer> newFriendFriends = friend.getFriends();
         newFriendFriends.remove(user.getId());
     }
 
-    public Collection<User> getMutualFriends(User user, User friend){
+    public Collection<User> getMutualFriends(User user, User friend) {
         Set<Integer> userFriends = user.getFriends();
         Set<Integer> friendFriends = friend.getFriends();
         Set<Integer> mutualFriends = new HashSet<>(userFriends);
@@ -86,7 +86,7 @@ public class UserService {
         return users;
     }
 
-    public List<User> getUserFriends(Integer id){
+    public List<User> getUserFriends(Integer id) {
         User u = getUserByID(id);
         Set<Integer> friends = u.getFriends();
         List<User> userFriends = friends.stream()
@@ -94,8 +94,8 @@ public class UserService {
         return userFriends;
     }
 
-    public User getUserByID(Integer id){
-        if (!userStorage.existsInStorage(id)){
+    public User getUserByID(Integer id) {
+        if (!userStorage.existsInStorage(id)) {
             throw new UserDoesNotExist();
         }
 

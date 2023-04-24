@@ -22,7 +22,7 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
-    public void addFilm(Film film) throws ValidationException{
+    public void addFilm(Film film) throws ValidationException {
         if (filmStorage.existsInStorage(film.getId())) {
             throw new ValidationException();
         }
@@ -44,9 +44,9 @@ public class FilmService {
         film.getUserLikes().add(userId);
     }
 
-    public void removeLike(Integer filmId, Integer userId){
+    public void removeLike(Integer filmId, Integer userId) {
         boolean isRemoved = filmStorage.getFilmByID(filmId).getUserLikes().remove(userId);
-        if (!isRemoved){
+        if (!isRemoved) {
             throw new UserDoesNotExist();
         }
     }
@@ -62,7 +62,7 @@ public class FilmService {
     public List<Film> getMostPopularFilms(String count) {
         Integer countAsInt = null;
 
-        if (count == null || count.isEmpty()){
+        if (count == null || count.isEmpty()) {
             countAsInt = 10;
         } else {
             countAsInt = Integer.parseInt(count);

@@ -29,11 +29,11 @@ public class ErrorResponse {
         //timestamp = new Date();
     }
 
-    public ErrorResponse(String message){
+    public ErrorResponse(String message) {
         this.message = message;
     }
 
-    public ErrorResponse(String error, String message){
+    public ErrorResponse(String error, String message) {
         this.error = error;
         this.message = message;
     }
