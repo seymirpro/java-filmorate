@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,9 +39,13 @@ public class FilmController {
         filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/popular?count={count}")
-    public List<Film> getMostPopularFilmsList(){
-        return null;
+    @GetMapping("/popular")
+    public List<Film> getMostPopularFilmsList(@RequestParam(value = "count", required = false) String count){
+        log.info("Count query param is {}", count);
+        List<Film> popularFilms = null;
+        popularFilms = filmService.getMostPopularFilms(count);
+        log.info("Popular films -> {}", Arrays.toString(popularFilms.toArray()));
+        return popularFilms;
     }
 
     @GetMapping

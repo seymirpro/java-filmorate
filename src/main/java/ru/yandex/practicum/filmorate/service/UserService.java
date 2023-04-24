@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -9,7 +8,10 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +44,10 @@ public class UserService {
     }
 
     public User updateUser(User user){
+        if (!userStorage.existsInStorage(user.getId())){
+            throw new UserDoesNotExist();
+        }
+
         if (user.getName().isEmpty() || user.getName() == null) {
             user.setName(user.getLogin());
         }
@@ -74,7 +80,8 @@ public class UserService {
         Set<Integer> friendFriends = friend.getFriends();
         Set<Integer> mutualFriends = new HashSet<>(userFriends);
         mutualFriends.retainAll(friendFriends);
-        Collection<User> users = userStorage.getUsers().stream().filter(u -> mutualFriends.contains(user.getId()))
+        Collection<User> users = mutualFriends.stream()
+                .map(userId -> userStorage.getUserByID(userId))
                 .collect(Collectors.toList());
         return users;
     }
