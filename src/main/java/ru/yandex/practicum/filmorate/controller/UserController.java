@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -13,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
 public class UserController {
     private UserService userService;
 
@@ -29,12 +26,12 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        userService.addFriend(userService.getUserByID(id), userService.getUserByID(friendId));
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        userService.removeFriend(userService.getUserByID(id), userService.getUserByID(friendId));
+        userService.removeFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -49,27 +46,17 @@ public class UserController {
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        try {
-            userService.createUser(user);
-            log.info("User's been added {}", user);
-        } catch (ValidationException e) {
-            log.error("Invalid user params", ValidationException.class);
-        }
-        return user;
+        return userService.createUser(user);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        return userService.getMutualFriends(userService.getUserByID(id), userService.getUserByID(otherId));
+        return userService.getMutualFriends(id, otherId);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        try {
-            userService.updateUser(user);
-        } catch (ValidationException e) {
-            log.error("User details => {}", user);
-        }
+        userService.updateUser(user);
         return user;
     }
 }

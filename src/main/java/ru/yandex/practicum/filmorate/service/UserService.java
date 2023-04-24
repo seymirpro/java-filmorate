@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserService {
     private UserStorage userStorage;
 
@@ -39,7 +41,13 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        userStorage.createUser(user);
+        try {
+            userStorage.createUser(user);
+            log.info("User's been added {}", user);
+        } catch (ValidationException e) {
+            log.error("Invalid user params", ValidationException.class);
+        }
+
         return user;
     }
 
@@ -55,34 +63,59 @@ public class UserService {
         if (userStorage.existsInStorage(user.getId())) {
             userStorage.updateUser(user);
         } else {
+            log.error("User details => {}", user);
             throw new ValidationException();
         }
 
         return user;
     }
 
-    public void addFriend(User user, User newFriend) {
-        Set<Integer> currentFriends = user.getFriends();
-        currentFriends.add(newFriend.getId());
-        Set<Integer> newFriendFriends = newFriend.getFriends();
-        newFriendFriends.add(user.getId());
+    public void addFriend(Integer userId, Integer newFriendId) {
+        if (!userStorage.existsInStorage(userId)) {
+            log.info("User with id = {} does not exist", userId);
+            throw new UserDoesNotExist();
+        }
+
+        if (!userStorage.existsInStorage(newFriendId)) {
+            log.info("User with id = {} does not exist", newFriendId);
+            throw new UserDoesNotExist();
+        }
+
+        try {
+            User user = userStorage.getUserByID(userId);
+            User newFriend = userStorage.getUserByID(newFriendId);
+            log.info("user friend info {}", newFriend.toString());
+            Set<Integer> currentFriends = user.getFriends();
+            currentFriends.add(newFriend.getId());
+            Set<Integer> newFriendFriends = newFriend.getFriends();
+            newFriendFriends.add(user.getId());
+            log.info("User with id={} added new friend", userId);
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        }
     }
 
-    public void removeFriend(User user, User friend) {
+    public void removeFriend(Integer userId, Integer friendId) {
+        User user = userStorage.getUserByID(userId);
+        User friend = userStorage.getUserByID(friendId);
         Set<Integer> currentFriends = user.getFriends();
         currentFriends.remove(friend.getId());
         Set<Integer> newFriendFriends = friend.getFriends();
         newFriendFriends.remove(user.getId());
+        log.info("User with id={} removed friend with id={}", userId, friendId);
     }
 
-    public Collection<User> getMutualFriends(User user, User friend) {
+    public Collection<User> getMutualFriends(Integer userId, Integer friendId) {
+        User user = userStorage.getUserByID(userId);
+        User friend = userStorage.getUserByID(friendId);
         Set<Integer> userFriends = user.getFriends();
         Set<Integer> friendFriends = friend.getFriends();
         Set<Integer> mutualFriends = new HashSet<>(userFriends);
         mutualFriends.retainAll(friendFriends);
         Collection<User> users = mutualFriends.stream()
-                .map(userId -> userStorage.getUserByID(userId))
+                .map(uID -> userStorage.getUserByID(uID))
                 .collect(Collectors.toList());
+        log.info("Getting list of mutual friends...");
         return users;
     }
 
@@ -91,6 +124,7 @@ public class UserService {
         Set<Integer> friends = u.getFriends();
         List<User> userFriends = friends.stream()
                 .map(i -> userStorage.getUserByID(i)).collect(Collectors.toList());
+        log.info("Getting list of User's friends...");
         return userFriends;
     }
 
@@ -98,7 +132,7 @@ public class UserService {
         if (!userStorage.existsInStorage(id)) {
             throw new UserDoesNotExist();
         }
-
+        log.info("Getting user details...");
         return userStorage.getUserByID(id);
     }
 }

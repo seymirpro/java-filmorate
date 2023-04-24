@@ -13,7 +13,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         return new ErrorResponse(
-                String.format("Ошибка с полем \"%s\".", e.getLocalizedMessage())
+                String.format("Ошибка с валидацией \"%s\".", e.getLocalizedMessage())
         );
     }
 
@@ -24,7 +24,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFound(final RuntimeException e) {
         return new ErrorResponse(
-                String.format("Ошибка с полем \"%s\".", e.getLocalizedMessage())
+                String.format("Не найден ресурс \"%s\".", e.getLocalizedMessage())
         );
     }
 
@@ -32,7 +32,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGeneralExceptions(final Throwable t) {
         return new ErrorResponse(
-                String.format("Ошибка с полем \"%s\".", t.getLocalizedMessage())
+                String.format("Ошибка сервера \"%s\".", t.getLocalizedMessage())
         );
     }
 }

@@ -31,13 +31,13 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public boolean existsInStorage(Integer id) {
-        return users.get(id) != null;
+        return users.containsKey(id);
     }
 
     @Override
     public User updateUser(User user) {
         users.put(user.getId(), user);
-        return null;
+        return user;
     }
 
     @Override

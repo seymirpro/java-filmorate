@@ -26,7 +26,6 @@ public class ErrorResponse {
     private String error;
 
     public ErrorResponse() {
-        //timestamp = new Date();
     }
 
     public ErrorResponse(String message) {
@@ -38,10 +37,7 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message
-    ) {
+    public ErrorResponse(HttpStatus httpStatus, String message) {
         this();
 
         this.code = httpStatus.value();
@@ -49,30 +45,14 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message,
-            String stackTrace
-    ) {
-        this(
-                httpStatus,
-                message
-        );
+    public ErrorResponse(HttpStatus httpStatus, String message, String stackTrace) {
+        this(httpStatus, message);
 
         this.stackTrace = stackTrace;
     }
 
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message,
-            String stackTrace,
-            Object data
-    ) {
-        this(
-                httpStatus,
-                message,
-                stackTrace
-        );
+    public ErrorResponse(HttpStatus httpStatus, String message, String stackTrace, Object data) {
+        this(httpStatus, message, stackTrace);
 
         this.data = data;
     }

@@ -25,8 +25,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getFilms() {
-        Collection<Film> films = this.films.values();
-        return films;
+        return this.films.values();
     }
 
     @Override
@@ -37,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public boolean existsInStorage(Integer id) {
-        return films.get(id) != null;
+        return films.containsKey(id);
     }
 
     @Override

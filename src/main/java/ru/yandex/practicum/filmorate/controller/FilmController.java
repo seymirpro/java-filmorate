@@ -1,21 +1,17 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 public class FilmController {
     private FilmService filmService;
 
@@ -31,7 +27,7 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.addLike(filmService.getFilmByID(id), userId);
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -41,11 +37,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     public List<Film> getMostPopularFilmsList(@RequestParam(value = "count", required = false) String count) {
-        log.info("Count query param is {}", count);
-        List<Film> popularFilms = null;
-        popularFilms = filmService.getMostPopularFilms(count);
-        log.info("Popular films -> {}", Arrays.toString(popularFilms.toArray()));
-        return popularFilms;
+        return filmService.getMostPopularFilms(count);
     }
 
     @GetMapping
@@ -55,24 +47,13 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        try {
-            filmService.addFilm(film);
-            log.info("Film added");
-        } catch (ValidationException ex) {
-            log.error(ex.getLocalizedMessage());
-        }
-
+        filmService.addFilm(film);
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        try {
-            filmService.updateFilm(film);
-            log.info("Film updated");
-        } catch (ValidationException ex) {
-            log.error("Film update operation invalid", ValidationException.class);
-        }
+        filmService.updateFilm(film);
         return film;
     }
 }
