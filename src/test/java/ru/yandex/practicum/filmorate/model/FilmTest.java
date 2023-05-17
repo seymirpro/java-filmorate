@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.validation.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +22,8 @@ class FilmTest {
 
     @Test
     public void shouldContainNonEmptyName() {
-        @Valid Film film = new Film(1, "", "description", LocalDate.now(), 20);
+        @Valid Film film = new Film(1, "", "description",
+                1, LocalDate.now(), 20, LocalDateTime.now());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
@@ -38,7 +40,7 @@ class FilmTest {
                 "descriptiondescription" +
                 "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescr" +
                 "iptiondescriptiondescriptiondescriptiondescriptiondescriptionde" +
-                "scriptiondescriptiondescription", LocalDate.now(), 20);
+                "scriptiondescriptiondescription", 1, LocalDate.now(), 20, LocalDateTime.now());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         violations.stream().forEach(System.out::println);
         assertFalse(violations.isEmpty());
@@ -46,15 +48,17 @@ class FilmTest {
 
     @Test
     public void shouldNotHaveReleaseDateBefore18951228() {
-        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1700, 1, 1),
-                20);
+        @Valid Film film = new Film(1, "The Gentlemen", "description", 2,
+                LocalDate.of(1700, 1, 1),
+                20, LocalDateTime.now());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void shouldHavePositiveDuration() {
-        @Valid Film film = new Film(1, "The Gentlemen", "description", LocalDate.of(1900, 1, 1), -19);
+        @Valid Film film = new Film(1, "The Gentlemen", "description", 2,
+                LocalDate.of(1900, 1, 1), -19, LocalDateTime.now());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }

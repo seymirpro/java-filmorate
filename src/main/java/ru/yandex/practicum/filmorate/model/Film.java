@@ -12,6 +12,7 @@ import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class Film {
     @NotBlank
     private String description;
 
+    private int ratingId;
 
     @PastOrPresent
     @MinReleaseDate
@@ -34,6 +36,8 @@ public class Film {
 
     @PositiveOrZero
     private double duration;
+
+    private LocalDateTime createdAt;
 
     @Getter(lazy = true)
     private final Set<Integer> userLikes = new HashSet<>();
