@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -9,19 +10,18 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+//@Qualifier("UserDbStorage")
 public class UserService {
+
     private UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -32,26 +32,34 @@ public class UserService {
     public User createUser(User user) {
         if (user.getLogin().contains(" ") ||
                 user.getBirthday().isAfter(LocalDate.now())
-                || userStorage.existsInStorage(user.getId())
         ) {
             throw new ValidationException();
         }
+
 
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
 
+        User newUserInDB = null;
         try {
-            userStorage.createUser(user);
+            newUserInDB = userStorage.createUser(user);
             log.info("User's been added {}", user);
         } catch (ValidationException e) {
             log.error("Invalid user params", ValidationException.class);
         }
 
-        return user;
+        return newUserInDB;
     }
 
     public User updateUser(User user) {
+        try {
+            System.out.println(userStorage.existsInStorage(user.getId()));
+        } catch (Exception ex){
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+
         if (!userStorage.existsInStorage(user.getId())) {
             throw new UserDoesNotExist();
         }
@@ -60,9 +68,9 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        if (userStorage.existsInStorage(user.getId())) {
+        try {
             userStorage.updateUser(user);
-        } else {
+        } catch (Exception ex){
             log.error("User details => {}", user);
             throw new ValidationException();
         }
@@ -82,53 +90,61 @@ public class UserService {
         }
 
         try {
-            User user = userStorage.getUserByID(userId);
-            User newFriend = userStorage.getUserByID(newFriendId);
-            log.info("user friend info {}", newFriend.toString());
-            Set<Integer> currentFriends = user.getFriends();
-            currentFriends.add(newFriend.getId());
-            Set<Integer> newFriendFriends = newFriend.getFriends();
-            newFriendFriends.add(user.getId());
-            log.info("User with id={} added new friend", userId);
+            userStorage.addFriend(userId, newFriendId);
         } catch (Exception ex) {
             throw new RuntimeException();
         }
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
-        User user = userStorage.getUserByID(userId);
-        User friend = userStorage.getUserByID(friendId);
-        Set<Integer> currentFriends = user.getFriends();
-        currentFriends.remove(friend.getId());
-        Set<Integer> newFriendFriends = friend.getFriends();
-        newFriendFriends.remove(user.getId());
-        log.info("User with id={} removed friend with id={}", userId, friendId);
+        if (!userStorage.existsInStorage(userId)){
+            throw new UserDoesNotExist();
+        }
+
+        if (!userStorage.existsInStorage(friendId)){
+            throw new UserDoesNotExist();
+        }
+
+        try {
+            userStorage.removeFriend(userId, friendId);
+            log.info("User with id={} removed friend with id={}", userId, friendId);
+        } catch (Exception ex){
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
     }
 
     public Collection<User> getMutualFriends(Integer userId, Integer friendId) {
-        User user = userStorage.getUserByID(userId);
-        User friend = userStorage.getUserByID(friendId);
-        Set<Integer> userFriends = user.getFriends();
-        Set<Integer> friendFriends = friend.getFriends();
-        Set<Integer> mutualFriends = new HashSet<>(userFriends);
-        mutualFriends.retainAll(friendFriends);
-        Collection<User> users = mutualFriends.stream()
-                .map(uID -> userStorage.getUserByID(uID))
-                .collect(Collectors.toList());
         log.info("Getting list of mutual friends...");
-        return users;
+        Optional<List<User>> mutualFriends = null;
+        try {
+            mutualFriends = userStorage.getMutualFriends(userId, friendId);
+
+        } catch (Exception ex){
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return mutualFriends.get();
     }
 
     public List<User> getUserFriends(Integer id) {
-        User u = getUserByID(id);
-        Set<Integer> friends = u.getFriends();
-        List<User> userFriends = friends.stream()
-                .map(i -> userStorage.getUserByID(i)).collect(Collectors.toList());
         log.info("Getting list of User's friends...");
-        return userFriends;
+        if (!userStorage.existsInStorage(id)){
+            throw new UserDoesNotExist();
+        }
+        Optional<List<User>> friends = null;
+        try {
+            friends = userStorage.getFriends(id);
+        } catch (Exception ex){
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+
+        return friends.get();
     }
 
     public User getUserByID(Integer id) {
+
         if (!userStorage.existsInStorage(id)) {
             throw new UserDoesNotExist();
         }
