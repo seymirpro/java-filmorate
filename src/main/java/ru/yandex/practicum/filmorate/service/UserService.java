@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-//@Qualifier("UserDbStorage")
 public class UserService {
 
     private UserStorage userStorage;

@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface FilmStorage {
     Film addFilm(Film film);
@@ -14,4 +16,8 @@ public interface FilmStorage {
     boolean existsInStorage(Integer id);
 
     Film getFilmByID(Integer id);
+
+    List<Film> getMostPopularFilms(Integer count);
+
+    List<Genre> getFilmGenres(Integer filmId);
 }

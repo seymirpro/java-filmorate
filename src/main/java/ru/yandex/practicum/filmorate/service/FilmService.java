@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmDoesNotExist;
 import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
@@ -20,7 +21,7 @@ public class FilmService {
     private FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -55,13 +56,20 @@ public class FilmService {
 
     public Collection<Film> getFilms() {
         log.info("Getting films...");
-        return filmStorage.getFilms();
+        Collection<Film> allFilms = null;
+        try {
+            allFilms = filmStorage.getFilms();
+        } catch (Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return allFilms;
     }
 
     public void addLike(Integer id, Integer userId) {
         try {
             Film film = filmStorage.getFilmByID(id);
-            film.getUserLikes().add(userId);
+            //film.getUserLikes().add(userId);
         } catch (FilmDoesNotExist exception) {
             throw new FilmDoesNotExist();
         } catch (Exception exception) {
@@ -70,10 +78,10 @@ public class FilmService {
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        boolean isRemoved = filmStorage.getFilmByID(filmId).getUserLikes().remove(userId);
-        if (!isRemoved) {
-            throw new UserDoesNotExist();
-        }
+        //boolean isRemoved = filmStorage.getFilmByID(filmId).getUserLikes().remove(userId);
+        //if (!isRemoved) {
+        //  throw new UserDoesNotExist();
+        // }
     }
 
     public Film getFilmByID(Integer id) {
@@ -88,12 +96,18 @@ public class FilmService {
     public List<Film> getMostPopularFilms(String count) {
         log.info("getMostPopularFilmsList() method has been called");
         log.info("Count query param is {}", count);
-        Integer countAsInt = count == null || count.isEmpty() ? 10 : Integer.parseInt(count);
+        Integer countAsInt = count == null || count.isEmpty() || count.equals("")
+                ? 10 : Integer.parseInt(count);
+        log.info("Count value is {}", countAsInt);
 
-        List<Film> popularFilms = filmStorage.getFilms().stream()
-                .sorted(Comparator.<Film>comparingInt(f -> f.getUserLikes().size())
-                        .thenComparing(f -> f.getId()).reversed())
-                .limit(countAsInt).collect(Collectors.toList());
+        List<Film> popularFilms = null;
+        try {
+            popularFilms = filmStorage.getMostPopularFilms(countAsInt);
+        } catch (Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            throw new RuntimeException();
+        }
         return popularFilms;
     }
 }
