@@ -28,8 +28,8 @@ public class FilmDbStorage implements FilmStorage{
         try {
             GeneratedKeyHolder holder = new GeneratedKeyHolder();
             String sqlQuery1 = "INSERT INTO films (name, description, release_date, " +
-                    "rating_id, created_at) " +
-                    "VALUES (?, ?, ?, ?, ?)";
+                    "rating_id, created_at, duration) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(con -> {
                 PreparedStatement ps = con.prepareStatement(sqlQuery1, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, film.getName());
@@ -38,6 +38,7 @@ public class FilmDbStorage implements FilmStorage{
                 ps.setInt(4, film.getMpa().getId());
                 java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
                 ps.setTimestamp(5, currentTimestamp);
+                ps.setInt(6, film.getDuration());
                 return ps;
             }, holder);
             int filmId = holder.getKey().intValue();
@@ -162,12 +163,13 @@ public class FilmDbStorage implements FilmStorage{
                 "FROM films f LEFT JOIN film_likes fk " +
                 "ON f.id=fk.film_id " +
                 "GROUP BY f.id " +
-                "ORDER BY count(*) DESC " +
+                "ORDER BY count(fk.user_id) DESC " +
                 "LIMIT ?" +
                 ")" +
                 "SELECT f.id, f.name, f.description, r.id as rating_id," +
                 "                r.name as rating_name," +
-                "                f.release_date, f.duration, f.created_at FROM films f " +
+                "                f.release_date, f.duration, " +
+                "                f.created_at FROM films f " +
                 "                LEFT JOIN rating r  " +
                 "                ON f.rating_id=r.id " +
                 "WHERE f.id IN (SELECT film_id FROM popular)";
@@ -178,7 +180,8 @@ public class FilmDbStorage implements FilmStorage{
                             .name(rs.getString("name"))
                             .description(rs.getString("description"))
                             .duration(rs.getInt("duration"))
-                            .releaseDate(rs.getDate("release_date").toLocalDate());
+                            .releaseDate(rs.getDate("release_date")
+                                    .toLocalDate());
 
                     RatingMpa ratingMpa = RatingMpa.builder()
                             .id(rs.getInt("rating_id"))
@@ -217,6 +220,18 @@ public class FilmDbStorage implements FilmStorage{
         RatingMpa ratingMpa = jdbcTemplate.queryForObject(sqlQuery, new BeanPropertyRowMapper<>(RatingMpa.class),
                 filmId);
         return ratingMpa;
+    }
+
+    @Override
+    public void addLike(Integer filmId, Integer userId) {
+        String sqlQuery = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
+    }
+
+    @Override
+    public void removeLike(Integer filmId, Integer userId) {
+        String sqlQuery = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {

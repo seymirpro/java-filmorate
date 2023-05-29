@@ -23,4 +23,8 @@ public interface FilmStorage {
     List<Genre> getFilmGenres(Integer filmId);
 
     RatingMpa getFilmMpaDetails(Integer filmId);
+
+    void addLike(Integer id, Integer userId);
+
+    void removeLike(Integer filmId, Integer userId);
 }

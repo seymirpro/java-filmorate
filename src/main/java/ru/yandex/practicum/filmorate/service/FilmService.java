@@ -9,20 +9,22 @@ import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
     private FilmStorage filmStorage;
+    private UserStorage userStorage;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("UserDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public void addFilm(Film film) throws ValidationException {
@@ -66,10 +68,17 @@ public class FilmService {
         return allFilms;
     }
 
-    public void addLike(Integer id, Integer userId) {
+    public void addLike(Integer filmId, Integer userId) {
         try {
-            Film film = filmStorage.getFilmByID(id);
-            //film.getUserLikes().add(userId);
+            if (!filmStorage.existsInStorage(filmId)) {
+                throw new FilmDoesNotExist();
+            }
+
+            if (!userStorage.existsInStorage(userId)){
+                throw new UserDoesNotExist();
+            }
+
+            filmStorage.addLike(filmId, userId);
         } catch (FilmDoesNotExist exception) {
             throw new FilmDoesNotExist();
         } catch (Exception exception) {
@@ -78,10 +87,20 @@ public class FilmService {
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        //boolean isRemoved = filmStorage.getFilmByID(filmId).getUserLikes().remove(userId);
-        //if (!isRemoved) {
-        //  throw new UserDoesNotExist();
-        // }
+        if (!filmStorage.existsInStorage(filmId)) {
+            throw new FilmDoesNotExist();
+        }
+
+        if (!userStorage.existsInStorage(userId)){
+            throw new UserDoesNotExist();
+        }
+
+        try {
+            filmStorage.removeLike(filmId, userId);
+        } catch (Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
     }
 
     public Film getFilmByID(Integer id) {
@@ -93,7 +112,7 @@ public class FilmService {
         Film film = null;
         try {
             film = filmStorage.getFilmByID(id);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
         }

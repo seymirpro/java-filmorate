@@ -61,4 +61,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     public RatingMpa getFilmMpaDetails(Integer filmId) {
         return null;
     }
+
+    @Override
+    public void addLike(Integer id, Integer userId) {
+
+    }
+
+    @Override
+    public void removeLike(Integer filmId, Integer userId) {
+
+    }
 }
