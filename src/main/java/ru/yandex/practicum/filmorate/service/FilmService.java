@@ -90,7 +90,14 @@ public class FilmService {
             throw new FilmDoesNotExist();
         }
         log.info("Getting film with id={}", id);
-        return filmStorage.getFilmByID(id);
+        Film film = null;
+        try {
+            film = filmStorage.getFilmByID(id);
+        } catch (Exception ex){
+            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return film;
     }
 
     public List<Film> getMostPopularFilms(String count) {
