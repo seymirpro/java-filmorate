@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.GenreDoesNotExist;
+import ru.yandex.practicum.filmorate.exception.GenreDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreDAO;
 
@@ -25,7 +25,7 @@ public class GenreService {
 
     public Genre getGenreByID(Integer id) {
         if (!existsInStorage(id)) {
-            throw new GenreDoesNotExist();
+            throw new GenreDoesNotExistException();
         }
         return genreDAO.getGenreByID(id);
     }

@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<List<User>> getFriends(Integer id) {
+    public List<User> getFriends(Integer id) {
         String sqlQuery = "WITH friends AS (SELECT friend_id FROM user_friends " +
                 "WHERE user_id = ?) " +
                 "SELECT * FROM users WHERE id IN (SELECT friend_id FROM friends)";
@@ -81,7 +81,7 @@ public class UserDbStorage implements UserStorage {
                 new BeanPropertyRowMapper<>(User.class),
                 id
         );
-        return Optional.of(friends);
+        return friends;
     }
 
     @Override
@@ -105,7 +105,8 @@ public class UserDbStorage implements UserStorage {
                 "(SELECT * FROM user_friends WHERE user_id=?) u2 " +
                 "ON u1.friend_id=u2.friend_id " +
                 ")" +
-                "SELECT * FROM users WHERE id IN (SELECT friend_id FROM common)";
+                "SELECT * FROM users u join common c " +
+                "ON u.id=c.friend_id";
         List<User> mutualFriends = jdbcTemplate.query(sqlQuery,
                 new BeanPropertyRowMapper<>(User.class),
                 userId,

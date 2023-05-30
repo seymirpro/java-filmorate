@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.RatingMpaDoesNotExist;
+import ru.yandex.practicum.filmorate.exception.RatingMpaDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.RatingMpaDAO;
 
@@ -19,7 +19,7 @@ public class RatingMpaService {
 
     public RatingMpa getRatingMpaByID(Integer id) {
         if (!existsInStorage(id)) {
-            throw new RatingMpaDoesNotExist();
+            throw new RatingMpaDoesNotExistException();
         }
         return ratingMpaDAO.getRatingMpaByID(id);
     }

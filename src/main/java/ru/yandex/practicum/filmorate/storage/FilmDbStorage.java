@@ -27,50 +27,45 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        try {
-            GeneratedKeyHolder holder = new GeneratedKeyHolder();
-            String sqlQuery1 = "INSERT INTO films (name, description, release_date, " +
-                    "rating_id, created_at, duration) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
-            jdbcTemplate.update(con -> {
-                PreparedStatement ps = con.prepareStatement(sqlQuery1, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, film.getName());
-                ps.setString(2, film.getDescription());
-                ps.setDate(3, Date.valueOf(film.getReleaseDate()));
-                ps.setInt(4, film.getMpa().getId());
-                java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
-                ps.setTimestamp(5, currentTimestamp);
-                ps.setInt(6, film.getDuration());
-                return ps;
-            }, holder);
-            int filmId = holder.getKey().intValue();
-            film.setId(filmId);
 
-            Optional<Object> objectOptional = Optional.ofNullable(film.getGenres());
-            if (objectOptional.isPresent()) {
-                List<Genre> genres = film.getGenres();
-                String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
-                        "VALUES (?, ?)";
+        GeneratedKeyHolder holder = new GeneratedKeyHolder();
+        String sqlQuery1 = "INSERT INTO films (name, description, release_date, " +
+                "rating_id, created_at, duration) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sqlQuery1, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, film.getName());
+            ps.setString(2, film.getDescription());
+            ps.setDate(3, Date.valueOf(film.getReleaseDate()));
+            ps.setInt(4, film.getMpa().getId());
+            java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
+            ps.setTimestamp(5, currentTimestamp);
+            ps.setInt(6, film.getDuration());
+            return ps;
+        }, holder);
+        int filmId = holder.getKey().intValue();
+        film.setId(filmId);
 
-                jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1, filmId);
-                        ps.setInt(2, genres.get(i).getId());
-                    }
+        Optional<Object> objectOptional = Optional.ofNullable(film.getGenres());
+        if (objectOptional.isPresent()) {
+            List<Genre> genres = film.getGenres();
+            String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
+                    "VALUES (?, ?)";
 
-                    @Override
-                    public int getBatchSize() {
-                        return genres.size();
-                    }
-                });
-            }
+            jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, filmId);
+                    ps.setInt(2, genres.get(i).getId());
+                }
 
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-            throw new RuntimeException();
+                @Override
+                public int getBatchSize() {
+                    return genres.size();
+                }
+            });
         }
+
 
         return film;
     }
@@ -116,55 +111,49 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        try {
-            String sqlQuery = "UPDATE films SET name = ?, " +
-                    "release_date = ?, " +
-                    "description = ?, " +
-                    "duration = ?, " +
-                    "rating_id = ? " +
-                    "WHERE id = ?";
-            jdbcTemplate.update(sqlQuery,
-                    film.getName(),
-                    Date.valueOf(film.getReleaseDate()),
-                    film.getDescription(),
-                    film.getDuration(),
-                    film.getMpa().getId(),
-                    film.getId());
-            Optional<Object> objectOptional = Optional.ofNullable(film.getGenres());
 
-            String sqlRemovePrevious = "DELETE FROM film_genre WHERE film_id = ?";
-            jdbcTemplate.update(sqlRemovePrevious, film.getId());
+        String sqlQuery = "UPDATE films SET name = ?, " +
+                "release_date = ?, " +
+                "description = ?, " +
+                "duration = ?, " +
+                "rating_id = ? " +
+                "WHERE id = ?";
+        jdbcTemplate.update(sqlQuery,
+                film.getName(),
+                Date.valueOf(film.getReleaseDate()),
+                film.getDescription(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
+        Optional<Object> objectOptional = Optional.ofNullable(film.getGenres());
 
-            if (objectOptional.isPresent() && !film.getGenres().isEmpty()) {
-                List<Genre> genresDistinct = film.getGenres().stream()
-                        .distinct().collect(Collectors.toList());
-                film.setGenres(genresDistinct);
-                System.out.println("Trying to update " + genresDistinct);
-                String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
-                        "VALUES (?, ?)";
+        String sqlRemovePrevious = "DELETE FROM film_genre WHERE film_id = ?";
+        jdbcTemplate.update(sqlRemovePrevious, film.getId());
 
-                jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        System.out.println("Trying to update values = " + film.getId() + " " +
-                                genresDistinct.get(i).getId());
-                        ps.setInt(1, film.getId());
-                        ps.setInt(2, genresDistinct.get(i).getId());
-                    }
+        if (objectOptional.isPresent() && !film.getGenres().isEmpty()) {
+            List<Genre> genresDistinct = film.getGenres().stream()
+                    .distinct().collect(Collectors.toList());
+            film.setGenres(genresDistinct);
+            System.out.println("Trying to update " + genresDistinct);
+            String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
+                    "VALUES (?, ?)";
 
-                    @Override
-                    public int getBatchSize() {
-                        return genresDistinct.size();
-                    }
-                });
-            }
+            jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    System.out.println("Trying to update values = " + film.getId() + " " +
+                            genresDistinct.get(i).getId());
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, genresDistinct.get(i).getId());
+                }
 
-        } catch (Exception ex) {
-            System.out.println(film);
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-            throw new RuntimeException();
+                @Override
+                public int getBatchSize() {
+                    return genresDistinct.size();
+                }
+            });
         }
+
 
         return film;
     }

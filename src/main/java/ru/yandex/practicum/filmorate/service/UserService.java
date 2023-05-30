@@ -4,10 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
+import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.utils.validation.constraints.model_validators.UserValidator;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -30,9 +31,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (user.getLogin().contains(" ") ||
-                user.getBirthday().isAfter(LocalDate.now())
-        ) {
+        if (UserValidator.validate(user)) {
             throw new ValidationException();
         }
 
@@ -61,32 +60,27 @@ public class UserService {
         }
 
         if (!userStorage.existsInStorage(user.getId())) {
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
 
         if (user.getName().isEmpty() || user.getName() == null) {
             user.setName(user.getLogin());
         }
 
-        try {
-            userStorage.updateUser(user);
-        } catch (Exception ex) {
-            log.error("User details => {}", user);
-            throw new ValidationException();
-        }
-
+        Optional.ofNullable(userStorage.updateUser(user))
+                .orElseThrow(() -> new ValidationException());
         return user;
     }
 
     public void addFriend(Integer userId, Integer newFriendId) {
         if (!userStorage.existsInStorage(userId)) {
             log.info("User with id = {} does not exist", userId);
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
 
         if (!userStorage.existsInStorage(newFriendId)) {
             log.info("User with id = {} does not exist", newFriendId);
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
 
         try {
@@ -98,11 +92,11 @@ public class UserService {
 
     public void removeFriend(Integer userId, Integer friendId) {
         if (!userStorage.existsInStorage(userId)) {
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
 
         if (!userStorage.existsInStorage(friendId)) {
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
 
         try {
@@ -130,23 +124,17 @@ public class UserService {
     public List<User> getUserFriends(Integer id) {
         log.info("Getting list of User's friends...");
         if (!userStorage.existsInStorage(id)) {
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
-        Optional<List<User>> friends = null;
-        try {
-            friends = userStorage.getFriends(id);
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
+        List<User> friends = userStorage.getFriends(id);
 
-        return friends.get();
+        return friends;
     }
 
     public User getUserByID(Integer id) {
 
         if (!userStorage.existsInStorage(id)) {
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
         log.info("Getting user details...");
         return userStorage.getUserByID(id);

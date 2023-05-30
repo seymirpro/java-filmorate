@@ -21,10 +21,10 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({
-            UserDoesNotExist.class,
-            FilmDoesNotExist.class,
-            GenreDoesNotExist.class,
-            RatingMpaDoesNotExist.class
+            UserDoesNotExistException.class,
+            FilmDoesNotExistException.class,
+            GenreDoesNotExistException.class,
+            RatingMpaDoesNotExistException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFound(final RuntimeException e) {

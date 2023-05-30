@@ -49,7 +49,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getMostPopularFilms(Integer count) {
-        return null;
+        return List.of();
     }
 
     @Override

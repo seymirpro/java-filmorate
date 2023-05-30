@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmDoesNotExist;
-import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
+import ru.yandex.practicum.filmorate.exception.FilmDoesNotExistException;
+import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -44,7 +44,7 @@ public class FilmService {
 
     public void updateFilm(Film film) {
         if (!filmStorage.existsInStorage(film.getId())) {
-            throw new FilmDoesNotExist();
+            throw new FilmDoesNotExistException();
         }
 
         try {
@@ -58,29 +58,23 @@ public class FilmService {
 
     public Collection<Film> getFilms() {
         log.info("Getting films...");
-        Collection<Film> allFilms = null;
-        try {
-            allFilms = filmStorage.getFilms();
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
+        Collection<Film> allFilms = filmStorage.getFilms();
         return allFilms;
     }
 
     public void addLike(Integer filmId, Integer userId) {
         try {
             if (!filmStorage.existsInStorage(filmId)) {
-                throw new FilmDoesNotExist();
+                throw new FilmDoesNotExistException();
             }
 
             if (!userStorage.existsInStorage(userId)) {
-                throw new UserDoesNotExist();
+                throw new UserDoesNotExistException();
             }
 
             filmStorage.addLike(filmId, userId);
-        } catch (FilmDoesNotExist exception) {
-            throw new FilmDoesNotExist();
+        } catch (FilmDoesNotExistException exception) {
+            throw new FilmDoesNotExistException();
         } catch (Exception exception) {
             log.error(exception.getLocalizedMessage());
         }
@@ -88,11 +82,11 @@ public class FilmService {
 
     public void removeLike(Integer filmId, Integer userId) {
         if (!filmStorage.existsInStorage(filmId)) {
-            throw new FilmDoesNotExist();
+            throw new FilmDoesNotExistException();
         }
 
         if (!userStorage.existsInStorage(userId)) {
-            throw new UserDoesNotExist();
+            throw new UserDoesNotExistException();
         }
 
         try {
@@ -106,7 +100,7 @@ public class FilmService {
     public Film getFilmByID(Integer id) {
         if (!filmStorage.existsInStorage(id)) {
             log.error("Film with id={} does not exist", id);
-            throw new FilmDoesNotExist();
+            throw new FilmDoesNotExistException();
         }
         log.info("Getting film with id={}", id);
         Film film = null;
