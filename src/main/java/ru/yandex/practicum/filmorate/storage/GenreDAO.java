@@ -31,10 +31,10 @@ public class GenreDAO {
         return genre;
     }
 
-    public boolean existsInStorage(Integer id){
+    public boolean existsInStorage(Integer id) {
         String sqlQuery = "SELECT EXISTS(SELECT 1 FROM genre WHERE id = ?)";
         Boolean result = jdbcTemplate.queryForObject(sqlQuery,
                 new Object[]{id}, Boolean.class);
-        return result!=null && result;
+        return result != null && result;
     }
 }

@@ -13,12 +13,12 @@ import java.util.List;
 public class RatingMpaService {
     private RatingMpaDAO ratingMpaDAO;
 
-    public RatingMpaService(RatingMpaDAO ratingMpaDAO){
+    public RatingMpaService(RatingMpaDAO ratingMpaDAO) {
         this.ratingMpaDAO = ratingMpaDAO;
     }
 
     public RatingMpa getRatingMpaByID(Integer id) {
-        if (!existsInStorage(id)){
+        if (!existsInStorage(id)) {
             throw new RatingMpaDoesNotExist();
         }
         return ratingMpaDAO.getRatingMpaByID(id);
@@ -28,7 +28,7 @@ public class RatingMpaService {
         return ratingMpaDAO.getAllRatingMpas();
     }
 
-    public boolean existsInStorage(Integer id){
+    public boolean existsInStorage(Integer id) {
         return ratingMpaDAO.existsInStorage(id);
     }
 }

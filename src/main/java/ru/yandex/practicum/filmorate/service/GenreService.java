@@ -15,22 +15,22 @@ public class GenreService {
     private GenreDAO genreDAO;
 
     @Autowired
-    public GenreService(GenreDAO genreDAO){
+    public GenreService(GenreDAO genreDAO) {
         this.genreDAO = genreDAO;
     }
 
-    public List<Genre> getAllGenres(){
+    public List<Genre> getAllGenres() {
         return genreDAO.getAllGenres();
     }
 
     public Genre getGenreByID(Integer id) {
-        if (!existsInStorage(id)){
+        if (!existsInStorage(id)) {
             throw new GenreDoesNotExist();
         }
         return genreDAO.getGenreByID(id);
     }
 
-    public boolean existsInStorage(Integer id){
+    public boolean existsInStorage(Integer id) {
         return genreDAO.existsInStorage(id);
     }
 }

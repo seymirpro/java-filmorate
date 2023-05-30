@@ -53,7 +53,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)";
         Boolean result = jdbcTemplate.queryForObject(sqlQuery,
                 new Object[]{id}, Boolean.class);
-        return result!=null && result;
+        return result != null && result;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class UserDbStorage implements UserStorage {
                 new BeanPropertyRowMapper<>(User.class),
                 userId,
                 friendId
-                );
+        );
         return Optional.of(mutualFriends);
     }
 

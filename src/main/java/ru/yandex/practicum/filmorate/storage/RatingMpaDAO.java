@@ -13,7 +13,7 @@ public class RatingMpaDAO {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public RatingMpaDAO(JdbcTemplate jdbcTemplate){
+    public RatingMpaDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -31,10 +31,10 @@ public class RatingMpaDAO {
         return ratingMpaList;
     }
 
-    public boolean existsInStorage(Integer id){
+    public boolean existsInStorage(Integer id) {
         String sqlQuery = "SELECT EXISTS(SELECT 1 FROM rating WHERE id = ?)";
         Boolean result = jdbcTemplate.queryForObject(sqlQuery,
                 new Object[]{id}, Boolean.class);
-        return result!=null && result;
+        return result != null && result;
     }
 }

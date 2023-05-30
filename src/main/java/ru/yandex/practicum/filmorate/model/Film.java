@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
 import ru.yandex.practicum.filmorate.utils.validation.constraints.MinReleaseDate;
 
 import javax.validation.constraints.NotBlank;
@@ -10,10 +13,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder

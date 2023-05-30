@@ -10,8 +10,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -54,7 +55,7 @@ public class UserService {
     public User updateUser(User user) {
         try {
             System.out.println(userStorage.existsInStorage(user.getId()));
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
         }
@@ -69,7 +70,7 @@ public class UserService {
 
         try {
             userStorage.updateUser(user);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             log.error("User details => {}", user);
             throw new ValidationException();
         }
@@ -96,18 +97,18 @@ public class UserService {
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
-        if (!userStorage.existsInStorage(userId)){
+        if (!userStorage.existsInStorage(userId)) {
             throw new UserDoesNotExist();
         }
 
-        if (!userStorage.existsInStorage(friendId)){
+        if (!userStorage.existsInStorage(friendId)) {
             throw new UserDoesNotExist();
         }
 
         try {
             userStorage.removeFriend(userId, friendId);
             log.info("User with id={} removed friend with id={}", userId, friendId);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
         }
@@ -119,7 +120,7 @@ public class UserService {
         try {
             mutualFriends = userStorage.getMutualFriends(userId, friendId);
 
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
         }
@@ -128,13 +129,13 @@ public class UserService {
 
     public List<User> getUserFriends(Integer id) {
         log.info("Getting list of User's friends...");
-        if (!userStorage.existsInStorage(id)){
+        if (!userStorage.existsInStorage(id)) {
             throw new UserDoesNotExist();
         }
         Optional<List<User>> friends = null;
         try {
             friends = userStorage.getFriends(id);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
         }

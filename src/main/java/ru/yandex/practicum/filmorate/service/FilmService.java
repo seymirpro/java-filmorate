@@ -74,7 +74,7 @@ public class FilmService {
                 throw new FilmDoesNotExist();
             }
 
-            if (!userStorage.existsInStorage(userId)){
+            if (!userStorage.existsInStorage(userId)) {
                 throw new UserDoesNotExist();
             }
 
@@ -91,7 +91,7 @@ public class FilmService {
             throw new FilmDoesNotExist();
         }
 
-        if (!userStorage.existsInStorage(userId)){
+        if (!userStorage.existsInStorage(userId)) {
             throw new UserDoesNotExist();
         }
 

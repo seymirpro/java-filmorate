@@ -17,13 +17,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository("FilmDbStorage")
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate){
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public Film addFilm(Film film) {
         try {
@@ -46,7 +47,7 @@ public class FilmDbStorage implements FilmStorage{
             film.setId(filmId);
 
             Optional<Object> objectOptional = Optional.ofNullable(film.getGenres());
-            if (objectOptional.isPresent()){
+            if (objectOptional.isPresent()) {
                 List<Genre> genres = film.getGenres();
                 String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
                         "VALUES (?, ?)";
@@ -65,7 +66,7 @@ public class FilmDbStorage implements FilmStorage{
                 });
             }
 
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
             throw new RuntimeException();
@@ -93,7 +94,7 @@ public class FilmDbStorage implements FilmStorage{
 
                     RatingMpa ratingMpa = RatingMpa.builder()
                             .id(rs.getInt("rating_id"))
-                                    .name(rs.getString("rating_name"))
+                            .name(rs.getString("rating_name"))
                             .build();
                     film.mpa(ratingMpa);
 
@@ -106,7 +107,7 @@ public class FilmDbStorage implements FilmStorage{
                     List<Genre> genres = jdbcTemplate.query(sqlQueryFilmGenres,
                             new BeanPropertyRowMapper<>(Genre.class),
                             rs.getInt("id")
-                            );
+                    );
                     film.genres(genres);
                     return film.build();
                 });
@@ -138,7 +139,7 @@ public class FilmDbStorage implements FilmStorage{
                 List<Genre> genresDistinct = film.getGenres().stream()
                         .distinct().collect(Collectors.toList());
                 film.setGenres(genresDistinct);
-                System.out.println("Trying to update " +  genresDistinct);
+                System.out.println("Trying to update " + genresDistinct);
                 String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
                         "VALUES (?, ?)";
 
@@ -158,7 +159,7 @@ public class FilmDbStorage implements FilmStorage{
                 });
             }
 
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(film);
             System.out.println(ex.getLocalizedMessage());
             ex.printStackTrace();
@@ -173,7 +174,7 @@ public class FilmDbStorage implements FilmStorage{
         String sqlQuery = "SELECT EXISTS(SELECT 1 FROM films WHERE id = ?)";
         Boolean result = jdbcTemplate.queryForObject(sqlQuery,
                 new Object[]{id}, Boolean.class);
-        return result!=null && result;
+        return result != null && result;
     }
 
     @Override
@@ -273,6 +274,6 @@ public class FilmDbStorage implements FilmStorage{
                 .duration(resultSet.getInt("duration"))
                 .mpa(getFilmMpaDetails(resultSet.getInt("id")))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
-        .build();
+                .build();
     }
 }

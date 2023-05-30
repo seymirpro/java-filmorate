@@ -13,20 +13,17 @@ public class GenresController {
     private GenreService genreService;
 
     @Autowired
-    public GenresController(GenreService genreService){
+    public GenresController(GenreService genreService) {
         this.genreService = genreService;
     }
 
     @GetMapping
-    public List<Genre> getAllGenres(){
+    public List<Genre> getAllGenres() {
         return genreService.getAllGenres();
     }
 
     @GetMapping("/{id}")
-    public Genre getGenreByID(@PathVariable Integer id){
+    public Genre getGenreByID(@PathVariable Integer id) {
         return genreService.getGenreByID(id);
     }
-
-    //@PutMapping("/{id}")
-    //public
 }

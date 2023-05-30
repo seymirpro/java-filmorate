@@ -11,5 +11,6 @@ public class RatingMpa {
     private int id;
     private String name;
 
-    public RatingMpa(){}
+    public RatingMpa() {
+    }
 }
