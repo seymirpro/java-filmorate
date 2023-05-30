@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NonNull;
 import ru.yandex.practicum.filmorate.utils.validation.constraints.MinReleaseDate;
 
@@ -12,11 +12,12 @@ import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Film {
     private int id;
     @NonNull
@@ -27,14 +28,16 @@ public class Film {
     @NotBlank
     private String description;
 
-
     @PastOrPresent
     @MinReleaseDate
     private LocalDate releaseDate;
 
     @PositiveOrZero
-    private double duration;
+    private Integer duration;
 
-    @Getter(lazy = true)
-    private final Set<Integer> userLikes = new HashSet<>();
+    private RatingMpa mpa;
+
+    private LocalDateTime createdAt;
+
+    private List<Genre> genres;
 }

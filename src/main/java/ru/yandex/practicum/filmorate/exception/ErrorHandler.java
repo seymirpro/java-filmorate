@@ -5,9 +5,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.controller.GenresController;
+import ru.yandex.practicum.filmorate.controller.RatingMpaController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class})
+@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class,
+        RatingMpaController.class, GenresController.class})
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -18,8 +21,10 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({
-            UserDoesNotExist.class,
-            FilmDoesNotExist.class
+            UserDoesNotExistException.class,
+            FilmDoesNotExistException.class,
+            GenreDoesNotExistException.class,
+            RatingMpaDoesNotExistException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFound(final RuntimeException e) {

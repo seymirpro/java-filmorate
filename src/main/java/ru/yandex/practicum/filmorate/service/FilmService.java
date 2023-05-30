@@ -2,26 +2,29 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmDoesNotExist;
-import ru.yandex.practicum.filmorate.exception.UserDoesNotExist;
+import ru.yandex.practicum.filmorate.exception.FilmDoesNotExistException;
+import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
     private FilmStorage filmStorage;
+    private UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("UserDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public void addFilm(Film film) throws ValidationException {
@@ -30,70 +33,77 @@ public class FilmService {
             throw new ValidationException();
         }
 
-        try {
-            filmStorage.addFilm(film);
-            log.info("Film added");
-        } catch (ValidationException ex) {
-            log.error(ex.getLocalizedMessage());
-            throw new ValidationException();
-        }
+
+        filmStorage.addFilm(film);
+        log.info("Film added");
+
     }
 
     public void updateFilm(Film film) {
         if (!filmStorage.existsInStorage(film.getId())) {
-            throw new FilmDoesNotExist();
+            throw new FilmDoesNotExistException();
         }
 
-        try {
-            filmStorage.updateFilm(film);
-            log.info("Film updated");
-        } catch (ValidationException ex) {
-            log.error("Film update operation invalid", ValidationException.class);
-        }
+
         filmStorage.updateFilm(film);
+        filmStorage.updateFilm(film);
+        log.info("Film updated");
     }
 
     public Collection<Film> getFilms() {
         log.info("Getting films...");
-        return filmStorage.getFilms();
+        Collection<Film> allFilms = filmStorage.getFilms();
+        return allFilms;
     }
 
-    public void addLike(Integer id, Integer userId) {
-        try {
-            Film film = filmStorage.getFilmByID(id);
-            film.getUserLikes().add(userId);
-        } catch (FilmDoesNotExist exception) {
-            throw new FilmDoesNotExist();
-        } catch (Exception exception) {
-            log.error(exception.getLocalizedMessage());
+    public void addLike(Integer filmId, Integer userId) {
+
+        if (!filmStorage.existsInStorage(filmId)) {
+            throw new FilmDoesNotExistException();
         }
+
+        if (!userStorage.existsInStorage(userId)) {
+            throw new UserDoesNotExistException();
+        }
+
+        filmStorage.addLike(filmId, userId);
+
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        boolean isRemoved = filmStorage.getFilmByID(filmId).getUserLikes().remove(userId);
-        if (!isRemoved) {
-            throw new UserDoesNotExist();
+        if (!filmStorage.existsInStorage(filmId)) {
+            throw new FilmDoesNotExistException();
         }
+
+        if (!userStorage.existsInStorage(userId)) {
+            throw new UserDoesNotExistException();
+        }
+
+
+        filmStorage.removeLike(filmId, userId);
+
     }
 
     public Film getFilmByID(Integer id) {
         if (!filmStorage.existsInStorage(id)) {
             log.error("Film with id={} does not exist", id);
-            throw new FilmDoesNotExist();
+            throw new FilmDoesNotExistException();
         }
         log.info("Getting film with id={}", id);
-        return filmStorage.getFilmByID(id);
+        Film film = filmStorage.getFilmByID(id);
+
+        return film;
     }
 
     public List<Film> getMostPopularFilms(String count) {
         log.info("getMostPopularFilmsList() method has been called");
         log.info("Count query param is {}", count);
-        Integer countAsInt = count == null || count.isEmpty() ? 10 : Integer.parseInt(count);
+        Integer countAsInt = count == null || count.isEmpty() || count.equals("")
+                ? 10 : Integer.parseInt(count);
+        log.info("Count value is {}", countAsInt);
 
-        List<Film> popularFilms = filmStorage.getFilms().stream()
-                .sorted(Comparator.<Film>comparingInt(f -> f.getUserLikes().size())
-                        .thenComparing(f -> f.getId()).reversed())
-                .limit(countAsInt).collect(Collectors.toList());
+        List<Film> popularFilms = filmStorage.getMostPopularFilms(countAsInt);
+
         return popularFilms;
     }
 }
