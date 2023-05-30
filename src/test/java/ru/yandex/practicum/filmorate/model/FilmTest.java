@@ -1,14 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
-import javax.validation.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 class FilmTest {
 
