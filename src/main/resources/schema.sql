@@ -50,7 +50,8 @@ CREATE TABLE  genre (
     name VARCHAR
 );
 
-INSERT INTO genre (name) VALUES ('Comedy'), ('Drama'), ('Cartoon'), ('Thriller'), ('Documentary'), ('Action');
+INSERT INTO genre (name) VALUES ('Комедия'), ('Драма'), ('Мультфильм'),
+            ('Триллер'), ('Документальный'), ('Боевик');
 
 DROP TABLE IF EXISTS film_genre CASCADE;
 CREATE TABLE  film_genre (
@@ -58,8 +59,8 @@ CREATE TABLE  film_genre (
     film_id INTEGER,
     genre_id INTEGER,
     FOREIGN KEY(film_id) REFERENCES films(id),
-    FOREIGN KEY(genre_id) REFERENCES genre(id),
-    PRIMARY KEY (film_id, genre_id)
+    FOREIGN KEY(genre_id) REFERENCES genre(id) -- ,
+    -- PRIMARY KEY (film_id, genre_id)
 );
 
 DROP TABLE IF EXISTS film_likes CASCADE;

@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+		<spring-boot.run.jvmArguments>-Dfile.encoding=UTF-8</spring-boot.run.jvmArguments>
 	</properties>
 
 	<dependencies>

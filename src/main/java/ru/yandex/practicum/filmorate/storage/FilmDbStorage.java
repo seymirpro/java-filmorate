@@ -14,6 +14,7 @@ import java.sql.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage{
@@ -128,6 +129,35 @@ public class FilmDbStorage implements FilmStorage{
                     film.getDuration(),
                     film.getMpa().getId(),
                     film.getId());
+            Optional<Object> objectOptional = Optional.ofNullable(film.getGenres());
+
+            String sqlRemovePrevious = "DELETE FROM film_genre WHERE film_id = ?";
+            jdbcTemplate.update(sqlRemovePrevious, film.getId());
+
+            if (objectOptional.isPresent() && !film.getGenres().isEmpty()) {
+                List<Genre> genresDistinct = film.getGenres().stream()
+                        .distinct().collect(Collectors.toList());
+                film.setGenres(genresDistinct);
+                System.out.println("Trying to update " +  genresDistinct);
+                String insertQuery = "INSERT INTO film_genre (film_id, genre_id) " +
+                        "VALUES (?, ?)";
+
+                jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        System.out.println("Trying to update values = " + film.getId() + " " +
+                                genresDistinct.get(i).getId());
+                        ps.setInt(1, film.getId());
+                        ps.setInt(2, genresDistinct.get(i).getId());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return genresDistinct.size();
+                    }
+                });
+            }
+
         } catch (Exception ex){
             System.out.println(film);
             System.out.println(ex.getLocalizedMessage());
@@ -198,7 +228,7 @@ public class FilmDbStorage implements FilmStorage{
 
     @Override
     public List<Genre> getFilmGenres(Integer filmId) {
-        String sqlQueryFilmGenres = "SELECT f.id, g.name FROM films f " +
+        String sqlQueryFilmGenres = "SELECT DISTINCT g.id, g.name FROM films f " +
                 "JOIN film_genre fg " +
                 "ON f.id=fg.film_id " +
                 "JOIN genre g " +

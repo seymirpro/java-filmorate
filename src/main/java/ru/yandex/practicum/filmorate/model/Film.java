@@ -10,6 +10,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,4 @@ public class Film {
     private LocalDateTime createdAt;
 
     private List<Genre> genres;
-    //@Getter(lazy = true)
-    //private final Set<Integer> userLikes = new HashSet<>();
 }
