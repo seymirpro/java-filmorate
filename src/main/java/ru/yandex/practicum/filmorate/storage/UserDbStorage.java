@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository("UserDbStorage")
 public class UserDbStorage implements UserStorage {
@@ -99,14 +98,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getMutualFriends(Integer userId, Integer friendId) {
-        String sqlQuery = "WITH common AS (SELECT u1.friend_id FROM " +
-                "(SELECT * FROM user_friends WHERE user_id=?) u1 " +
-                " join " +
-                "(SELECT * FROM user_friends WHERE user_id=?) u2 " +
-                "ON u1.friend_id=u2.friend_id " +
-                ")" +
-                "SELECT * FROM users u join common c " +
-                "ON u.id=c.friend_id";
+
         String sqlSelectMutualFriends = "SELECT u.* FROM user_friends u1 JOIN user_friends u2 " +
                 "ON u1.friend_id = u2.friend_id " +
                 "JOIN users u ON u1.friend_id = u.id" +
