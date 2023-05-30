@@ -23,5 +23,5 @@ public interface UserStorage {
 
     void removeFriend(Integer userId, Integer friendId);
 
-    Optional<List<User>> getMutualFriends(Integer userId, Integer friendId);
+    List<User> getMutualFriends(Integer userId, Integer friendId);
 }

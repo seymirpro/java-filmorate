@@ -98,7 +98,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<List<User>> getMutualFriends(Integer userId, Integer friendId) {
+    public List<User> getMutualFriends(Integer userId, Integer friendId) {
         String sqlQuery = "WITH common AS (SELECT u1.friend_id FROM " +
                 "(SELECT * FROM user_friends WHERE user_id=?) u1 " +
                 " join " +
@@ -107,12 +107,18 @@ public class UserDbStorage implements UserStorage {
                 ")" +
                 "SELECT * FROM users u join common c " +
                 "ON u.id=c.friend_id";
-        List<User> mutualFriends = jdbcTemplate.query(sqlQuery,
+        String sqlSelectMutualFriends = "SELECT u.* FROM user_friends u1 JOIN user_friends u2 " +
+                "ON u1.friend_id = u2.friend_id " +
+                "JOIN users u ON u1.friend_id = u.id" +
+                "   WHERE 1=1 " +
+                "   AND u1.user_id = ? " +
+                "   AND u2.user_id = ? ";
+        List<User> mutualFriends = jdbcTemplate.query(sqlSelectMutualFriends,
                 new BeanPropertyRowMapper<>(User.class),
                 userId,
                 friendId
         );
-        return Optional.of(mutualFriends);
+        return mutualFriends;
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {

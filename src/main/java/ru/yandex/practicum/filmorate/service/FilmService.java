@@ -33,13 +33,10 @@ public class FilmService {
             throw new ValidationException();
         }
 
-        try {
-            filmStorage.addFilm(film);
-            log.info("Film added");
-        } catch (ValidationException ex) {
-            log.error(ex.getLocalizedMessage());
-            throw new ValidationException();
-        }
+
+        filmStorage.addFilm(film);
+        log.info("Film added");
+
     }
 
     public void updateFilm(Film film) {
@@ -47,13 +44,10 @@ public class FilmService {
             throw new FilmDoesNotExistException();
         }
 
-        try {
-            filmStorage.updateFilm(film);
-            log.info("Film updated");
-        } catch (ValidationException ex) {
-            log.error("Film update operation invalid", ValidationException.class);
-        }
+
         filmStorage.updateFilm(film);
+        filmStorage.updateFilm(film);
+        log.info("Film updated");
     }
 
     public Collection<Film> getFilms() {
@@ -63,21 +57,17 @@ public class FilmService {
     }
 
     public void addLike(Integer filmId, Integer userId) {
-        try {
-            if (!filmStorage.existsInStorage(filmId)) {
-                throw new FilmDoesNotExistException();
-            }
 
-            if (!userStorage.existsInStorage(userId)) {
-                throw new UserDoesNotExistException();
-            }
-
-            filmStorage.addLike(filmId, userId);
-        } catch (FilmDoesNotExistException exception) {
+        if (!filmStorage.existsInStorage(filmId)) {
             throw new FilmDoesNotExistException();
-        } catch (Exception exception) {
-            log.error(exception.getLocalizedMessage());
         }
+
+        if (!userStorage.existsInStorage(userId)) {
+            throw new UserDoesNotExistException();
+        }
+
+        filmStorage.addLike(filmId, userId);
+
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -89,12 +79,9 @@ public class FilmService {
             throw new UserDoesNotExistException();
         }
 
-        try {
-            filmStorage.removeLike(filmId, userId);
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
+
+        filmStorage.removeLike(filmId, userId);
+
     }
 
     public Film getFilmByID(Integer id) {
@@ -103,13 +90,8 @@ public class FilmService {
             throw new FilmDoesNotExistException();
         }
         log.info("Getting film with id={}", id);
-        Film film = null;
-        try {
-            film = filmStorage.getFilmByID(id);
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
+        Film film = filmStorage.getFilmByID(id);
+
         return film;
     }
 
@@ -120,14 +102,8 @@ public class FilmService {
                 ? 10 : Integer.parseInt(count);
         log.info("Count value is {}", countAsInt);
 
-        List<Film> popularFilms = null;
-        try {
-            popularFilms = filmStorage.getMostPopularFilms(countAsInt);
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-            throw new RuntimeException();
-        }
+        List<Film> popularFilms = filmStorage.getMostPopularFilms(countAsInt);
+
         return popularFilms;
     }
 }

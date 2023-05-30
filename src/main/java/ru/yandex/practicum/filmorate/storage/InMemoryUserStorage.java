@@ -59,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Optional<List<User>> getMutualFriends(Integer userId, Integer friendId) {
-        return Optional.empty();
+    public List<User> getMutualFriends(Integer userId, Integer friendId) {
+        return List.of();
     }
 }

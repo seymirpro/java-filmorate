@@ -39,24 +39,13 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        User newUserInDB = null;
-        try {
-            newUserInDB = userStorage.createUser(user);
-            log.info("User's been added {}", user);
-        } catch (ValidationException e) {
-            log.error("Invalid user params", ValidationException.class);
-        }
+        User newUserInDB = userStorage.createUser(user);
+        log.info("User's been added {}", user);
 
         return newUserInDB;
     }
 
     public User updateUser(User user) {
-        try {
-            System.out.println(userStorage.existsInStorage(user.getId()));
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
 
         if (!userStorage.existsInStorage(user.getId())) {
             throw new UserDoesNotExistException();
@@ -82,11 +71,8 @@ public class UserService {
             throw new UserDoesNotExistException();
         }
 
-        try {
-            userStorage.addFriend(userId, newFriendId);
-        } catch (Exception ex) {
-            throw new RuntimeException();
-        }
+
+        userStorage.addFriend(userId, newFriendId);
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
@@ -98,26 +84,19 @@ public class UserService {
             throw new UserDoesNotExistException();
         }
 
-        try {
-            userStorage.removeFriend(userId, friendId);
-            log.info("User with id={} removed friend with id={}", userId, friendId);
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
+
+        userStorage.removeFriend(userId, friendId);
+        log.info("User with id={} removed friend with id={}", userId, friendId);
+
     }
 
     public Collection<User> getMutualFriends(Integer userId, Integer friendId) {
         log.info("Getting list of mutual friends...");
-        Optional<List<User>> mutualFriends = null;
-        try {
-            mutualFriends = userStorage.getMutualFriends(userId, friendId);
+        List<User> mutualFriends = null;
 
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
-        return mutualFriends.get();
+        mutualFriends = userStorage.getMutualFriends(userId, friendId);
+
+        return mutualFriends;
     }
 
     public List<User> getUserFriends(Integer id) {
